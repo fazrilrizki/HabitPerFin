@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\self-project\\\\habitfinper\\\\app\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path . -File -Name)",
+      "Bash(Get-ChildItem -Path app -Recurse -File)",
+      "Bash(Select-Object FullName)"
+    ]
+  }
+}
