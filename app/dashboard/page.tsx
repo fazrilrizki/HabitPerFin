@@ -1,3 +1,5 @@
+import { auth0 } from "@/lib/auth0";
+import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -14,7 +16,10 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth0.getSession();
+  if (!session) redirect("/auth/login");
+
   return (
     <SidebarProvider>
       <AppSidebar />
