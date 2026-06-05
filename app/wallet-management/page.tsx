@@ -1,5 +1,3 @@
-"use server"
-
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar"
@@ -8,8 +6,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -17,57 +13,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { columns, WalletManagement } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Button } from "@/components/ui/button";
-import { CircleAlertIcon, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import z from "zod";
-import prisma from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/client";
-import { revalidatePath } from "next/cache";
-import { create } from "domain";
-
-async function getData(): Promise<WalletManagement[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "1",
-      name: 'Mandiri',
-      initial_balance: 1000000,
-      status: "Active",
-    },
-    // ...
-  ]
-}
-
-async function createWallet(formData: FormData) {
-  const name = formData.get("name") as string
-  const initial_balance = formData.get("initial_balance") as string
-
-  const schema = z.object({
-    name: z.string().min(1, "Name is required"),
-    initial_balance: z.string().min(1, "Initial balance is required")
-  })
-
-  const parsed = schema.safeParse({name, initial_balance})
-  if (!parsed.success) {
-
-  }
-
-  await prisma.walletManagements.create({
-    data: {
-      name: parsed.data.name,
-      initial_balance: new Decimal(parsed.data.initial_balance),
-      status: "Active"
-    }
-  })
-
-  revalidatePath("/wallet-management")
-}
+import { getData, createWallet } from "./actions";
 
 export default async function Page() {
   const session = await auth0.getSession();
@@ -104,43 +58,42 @@ export default async function Page() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
                 <Dialog>
-                  <form action={createWallet}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <PlusCircle /> Add Wallet
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-sm">
-                      <DialogHeader>
-                        <DialogTitle>Add wallet</DialogTitle>
-                        <DialogDescription>
-                          Add or create your wallet here. Click save when you&apos;re
-                          done.
-                        </DialogDescription>
-                      </DialogHeader>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-fit">
+                      <PlusCircle /> Add Wallet
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-sm">
+                    <DialogHeader>
+                      <DialogTitle>Add wallet</DialogTitle>
+                      <DialogDescription>
+                        Add or create your wallet here. Click save when you&apos;re
+                        done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form action={createWallet}>
                       <FieldGroup>
                         <Field>
                           <Label htmlFor="name">Name</Label>
                           <Input id="name" name="name" placeholder="Mandiri" />
                         </Field>
                         <Field>
-                          <Label htmlFor="initial-balance">Initial Balance</Label>
-                          <Input id="initial-balance" name="initial-balance" placeholder="Rp. 100.000" />
+                          <Label htmlFor="initial_balance">Initial Balance</Label>
+                          <Input id="initial_balance" name="initial_balance" placeholder="1000000" />
                         </Field>
                       </FieldGroup>
-                      <DialogFooter>
+                      <DialogFooter className="mt-4">
                         <DialogClose asChild>
-                          <Button variant="outline">Cancel</Button>
+                          <Button type="button" variant="outline">Cancel</Button>
                         </DialogClose>
                         <Button type="submit">Save changes</Button>
                       </DialogFooter>
-                    </DialogContent>
-                  </form>
+                    </form>
+                  </DialogContent>
                 </Dialog>
                 <DataTable columns={columns} data={data}/>
             </div>
         </div>
-
       </SidebarInset>
     </SidebarProvider>
   )
