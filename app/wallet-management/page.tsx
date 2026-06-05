@@ -15,13 +15,8 @@ import {
 } from "@/components/ui/sidebar"
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { getData, createWallet } from "./actions";
+import { getData } from "./actions";
+import { AddWalletDialog } from "./add-wallet-dialog";
 
 export default async function Page() {
   const session = await auth0.getSession();
@@ -57,40 +52,7 @@ export default async function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-fit">
-                      <PlusCircle /> Add Wallet
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-sm">
-                    <DialogHeader>
-                      <DialogTitle>Add wallet</DialogTitle>
-                      <DialogDescription>
-                        Add or create your wallet here. Click save when you&apos;re
-                        done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form action={createWallet}>
-                      <FieldGroup>
-                        <Field>
-                          <Label htmlFor="name">Name</Label>
-                          <Input id="name" name="name" placeholder="Mandiri" />
-                        </Field>
-                        <Field>
-                          <Label htmlFor="initial_balance">Initial Balance</Label>
-                          <Input id="initial_balance" name="initial_balance" placeholder="1000000" />
-                        </Field>
-                      </FieldGroup>
-                      <DialogFooter className="mt-4">
-                        <DialogClose asChild>
-                          <Button type="button" variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit">Save changes</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <AddWalletDialog />
                 <DataTable columns={columns} data={data}/>
             </div>
         </div>
