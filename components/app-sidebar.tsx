@@ -13,6 +13,8 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Wallet2,
+  WalletMinimal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -57,6 +59,12 @@ const data = {
       url: "/dashboard",
       icon: LayoutDashboardIcon,
       isActive: true,
+    },
+    {
+      title: "Wallet Management",
+      url: "/wallet-management",
+      icon: WalletMinimal,
+      isActive: false,
     },
   ]
 }
