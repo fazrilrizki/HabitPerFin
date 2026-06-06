@@ -78,3 +78,11 @@ export async function updateWallet(formData: FormData) {
 
   revalidatePath("/wallet-management")
 }
+
+export async function deleteWallet(id: string) {
+  await prisma.walletManagements.delete({
+    where: { id: parseInt(id) }
+  })
+
+  revalidatePath("/wallet-management")
+}
