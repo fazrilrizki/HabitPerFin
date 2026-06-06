@@ -18,3 +18,13 @@ model User {
   email String @unique
   password String
 }
+
+model WalletManagements {
+  id Int @id @default(autoincrement())
+  name String
+  initial_balance Decimal @db.Decimal(15, 2)
+  status String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("wallet_managements")
+}
