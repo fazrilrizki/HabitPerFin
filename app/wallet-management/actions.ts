@@ -42,3 +42,11 @@ export async function createWallet(formData: FormData) {
 
   revalidatePath("/wallet-management")
 }
+
+export async function toggleWalletStatus(id: string, status: "Active" | "Inactive") {
+  await prisma.walletManagements.update({
+    where: { id: parseInt(id) },
+    data: { status }
+  })
+  revalidatePath("/wallet-management")
+}
