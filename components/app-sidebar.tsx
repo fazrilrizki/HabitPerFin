@@ -17,6 +17,7 @@ import {
   WalletMinimal,
 } from "lucide-react"
 
+import { usePathname } from "next/navigation"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
@@ -58,13 +59,11 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboardIcon,
-      isActive: true,
     },
     {
       title: "Wallet Management",
       url: "/wallet-management",
       icon: WalletMinimal,
-      isActive: false,
     },
   ]
 }
@@ -78,13 +77,20 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const pathname = usePathname()
+
+  const navItems = data.navMain.map((item) => ({
+    ...item,
+    isActive: pathname === item.url,
+  }))
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user ?? data.user} />
