@@ -50,3 +50,31 @@ export async function toggleWalletStatus(id: string, status: "Active" | "Inactiv
   })
   revalidatePath("/wallet-management")
 }
+
+const updateWalletSchema = z.object({
+  id: z.string().min(1, "Invalid wallet ID"),
+  name: z.string().min(1, "Name is required"),
+  initial_balance: z.string().min(1, "Initial balance is required")
+})
+
+export async function updateWallet(formData: FormData) {
+  const parsed = updateWalletSchema.safeParse({
+    id: formData.get("id") as string,
+    name: formData.get("name"),
+    initial_balance: formData.get("initial_balance"),
+  });
+
+  if (!parsed.success) {
+    return
+  }
+
+  await prisma.walletManagements.update({
+    where: { id: parseInt(parsed.data.id) },
+    data: {
+      name: parsed.data.name,
+      initial_balance: parsed.data.initial_balance,
+    }
+  })
+
+  revalidatePath("/wallet-management")
+}
