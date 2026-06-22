@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState, useTransition } from "react"
+import { PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -11,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createCategory } from "./actions"
@@ -19,79 +22,75 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function AddCategoryDialog() {
   const [open, setOpen] = useState(false)
-  const [isPending, setIsPending] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const formRef = useRef<HTMLFormElement>(null)
 
-  async function onSubmit(formData: FormData) {
-    setIsPending(true)
-    try {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
       await createCategory(formData)
-      toast.success("Category created successfully")
       setOpen(false)
-    } catch (error) {
-      toast.error("Failed to create category")
-    } finally {
-      setIsPending(false)
-    }
+      formRef.current?.reset()
+      toast.success("Category created successfully")
+    })
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Category</Button>
+        <Button variant="outline" size="sm" className="w-fit">
+          <PlusCircle /> Add Category
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Add Expense Category</DialogTitle>
           <DialogDescription>
             Create a new category to organize your expenses and set budget limits.
           </DialogDescription>
         </DialogHeader>
-        <form action={onSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
+        <form ref={formRef} onSubmit={handleSubmit}>
+          <FieldGroup>
+            <Field>
+              <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="e.g. Food & Beverage"
-                className="col-span-3"
                 required
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="categoryType" className="text-right">
-                Type
-              </Label>
-              <div className="col-span-3">
-                <Select name="categoryType" defaultValue="Non-Primer" required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Primer">Primer (Kebutuhan Pokok)</SelectItem>
-                    <SelectItem value="Non-Primer">Non-Primer (Keinginan/Gaya Hidup)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="budgetLimit" className="text-right">
-                Budget Limit (Rp)
-              </Label>
+            </Field>
+            <Field>
+              <Label htmlFor="categoryType">Type</Label>
+              <Select name="categoryType" defaultValue="Non-Primer" required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Primer">Primer (Kebutuhan Pokok)</SelectItem>
+                  <SelectItem value="Non-Primer">Non-Primer (Keinginan/Gaya Hidup)</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field>
+              <Label htmlFor="budgetLimit">Budget Limit (Rp)</Label>
               <Input
                 id="budgetLimit"
                 name="budgetLimit"
                 type="number"
                 placeholder="0"
-                className="col-span-3"
                 required
                 min="0"
               />
-            </div>
-          </div>
-          <DialogFooter>
+            </Field>
+          </FieldGroup>
+          <DialogFooter className="mt-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" disabled={isPending}>
+                Cancel
+              </Button>
+            </DialogClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Saving..." : "Save changes"}
             </Button>

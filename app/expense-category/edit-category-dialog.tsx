@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { updateCategory } from "./actions"
@@ -18,21 +20,24 @@ import { toast } from "sonner"
 import { ExpenseCategory } from "./columns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export function EditCategoryDialog({ category, children }: { category: ExpenseCategory, children: React.ReactNode }) {
-  const [open, setOpen] = useState(false)
-  const [isPending, setIsPending] = useState(false)
+interface EditCategoryDialogProps {
+  category: ExpenseCategory;
+  children: React.ReactNode;
+}
 
-  async function onSubmit(formData: FormData) {
-    setIsPending(true)
-    try {
+export function EditCategoryDialog({ category, children }: EditCategoryDialogProps) {
+  const [open, setOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
       await updateCategory(formData)
-      toast.success("Category updated successfully")
       setOpen(false)
-    } catch (error) {
-      toast.error("Failed to update category")
-    } finally {
-      setIsPending(false)
-    }
+      toast.success("Category updated successfully")
+    })
   }
 
   return (
@@ -40,60 +45,55 @@ export function EditCategoryDialog({ category, children }: { category: ExpenseCa
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Edit Category</DialogTitle>
           <DialogDescription>
             Make changes to your category here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <form action={onSubmit}>
+        <form ref={formRef} onSubmit={handleSubmit}>
           <input type="hidden" name="id" value={category.id} />
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
+          <FieldGroup>
+            <Field>
+              <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 name="name"
                 defaultValue={category.name}
-                className="col-span-3"
                 required
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="categoryType" className="text-right">
-                Type
-              </Label>
-              <div className="col-span-3">
-                <Select name="categoryType" defaultValue={category.categoryType} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Primer">Primer (Kebutuhan Pokok)</SelectItem>
-                    <SelectItem value="Non-Primer">Non-Primer (Keinginan/Gaya Hidup)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="budgetLimit" className="text-right">
-                Budget Limit (Rp)
-              </Label>
+            </Field>
+            <Field>
+              <Label htmlFor="categoryType">Type</Label>
+              <Select name="categoryType" defaultValue={category.categoryType} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Primer">Primer (Kebutuhan Pokok)</SelectItem>
+                  <SelectItem value="Non-Primer">Non-Primer (Keinginan/Gaya Hidup)</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field>
+              <Label htmlFor="budgetLimit">Budget Limit (Rp)</Label>
               <Input
                 id="budgetLimit"
                 name="budgetLimit"
                 type="number"
                 defaultValue={category.budgetLimit}
-                className="col-span-3"
                 required
                 min="0"
               />
-            </div>
-          </div>
-          <DialogFooter>
+            </Field>
+          </FieldGroup>
+          <DialogFooter className="mt-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" disabled={isPending}>
+                Cancel
+              </Button>
+            </DialogClose>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Saving..." : "Save changes"}
             </Button>
