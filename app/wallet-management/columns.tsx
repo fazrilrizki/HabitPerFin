@@ -27,6 +27,16 @@ export const columns: ColumnDef<WalletManagement>[] = [
   {
     accessorKey: "initial_balance",
     header: "Initial Balance",
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("initial_balance"))
+      const formatted = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      }).format(amount)
+
+      return <div className="font-medium">{formatted}</div>
+    },
   },
   {
     accessorKey: "status",
