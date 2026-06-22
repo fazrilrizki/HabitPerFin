@@ -3,33 +3,44 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { deleteWallet, toggleWalletStatus } from "./actions"
+import { deleteCategory, toggleCategoryStatus } from "./actions"
 import { toast } from "sonner"
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Trash2Icon } from "lucide-react"
-import { EditWalletDialog } from "./edit-wallet-dialog"
+import { EditCategoryDialog } from "./edit-category-dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type WalletManagement = {
+export type ExpenseCategory = {
   id: string
   name: string
-  initial_balance: number
+  categoryType: "Primer" | "Non-Primer"
+  budgetLimit: number
   status: "Active" | "Inactive"
 }
 
-export const columns: ColumnDef<WalletManagement>[] = [
+export const columns: ColumnDef<ExpenseCategory>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Category Name",
   },
   {
-    accessorKey: "initial_balance",
-    header: "Initial Balance",
+    accessorKey: "categoryType",
+    header: "Type",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("initial_balance"))
+      const type = row.getValue("categoryType") as string
+      return (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${type === "Primer" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
+          {type}
+        </span>
+      )
+    }
+  },
+  {
+    accessorKey: "budgetLimit",
+    header: "Budget Limit",
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("budgetLimit"))
       const formatted = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
@@ -51,9 +62,9 @@ export const columns: ColumnDef<WalletManagement>[] = [
             checked={status === "Active"}
             onCheckedChange={(checked) => {
               toast.promise(
-                toggleWalletStatus(row.original.id, checked ? "Active" : "Inactive"),
+                toggleCategoryStatus(row.original.id, checked ? "Active" : "Inactive"),
                 {
-                  loading: "Updating wallet status...",
+                  loading: "Updating status...",
                   success: "Status updated successfully!",
                   error: "Failed to update status."
                 }
@@ -72,11 +83,11 @@ export const columns: ColumnDef<WalletManagement>[] = [
     cell: ({ row }) => {
       return (
         <ButtonGroup>
-          <EditWalletDialog wallet={row.original}>
+          <EditCategoryDialog category={row.original}>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/50" aria-label="Edit">
               <Edit className="size-4" /> Edit
             </Button>
-          </EditWalletDialog>
+          </EditCategoryDialog>
           <ButtonGroupSeparator />
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -89,18 +100,18 @@ export const columns: ColumnDef<WalletManagement>[] = [
                 <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                   <Trash2Icon />
               </AlertDialogMedia>
-              <AlertDialogTitle>Delete wallet?</AlertDialogTitle>
+              <AlertDialogTitle>Delete category?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will permanently delete this wallet and all of its data. This action cannot be undone.``
+                This will permanently delete this category. This action cannot be undone.
               </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                 <AlertDialogAction variant="destructive" onClick={() => {
-                    toast.promise(deleteWallet(row.original.id), {
-                      loading: "Deleting wallet...",
-                      success: "Wallet deleted successfully!",
-                      error: "Failed to delete wallet."
+                    toast.promise(deleteCategory(row.original.id), {
+                      loading: "Deleting category...",
+                      success: "Category deleted successfully!",
+                      error: "Failed to delete category."
                     })
                   }}>
                   Delete

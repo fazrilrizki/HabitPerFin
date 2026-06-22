@@ -28,3 +28,14 @@ model WalletManagements {
 
   @@map("wallet_managements")
 }
+
+model ExpenseCategory {
+  id           Int      @id @default(autoincrement())
+  name         String
+  categoryType String   // "Primer" or "Non-Primer"
+  budgetLimit  Decimal  @db.Decimal(15, 2)
+  status       String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("expense_categories")
+}
