@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { deleteWallet, toggleWalletStatus } from "./actions"
 import { toast } from "sonner"
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
@@ -44,20 +45,24 @@ export const columns: ColumnDef<WalletManagement>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
-        <Switch
-          checked={status === "Active"}
-          onCheckedChange={(checked) => {
-            toast.promise(
-              toggleWalletStatus(row.original.id, checked ? "Active" : "Inactive"),
-              {
-                loading: "Updating wallet status...",
-                success: "Status updated successfully!",
-                error: "Failed to update status,."
-              }
-            )
-          }}
-          aria-label="Toggle status"
-        />
+        <div className="flex items-center space-x-2">
+          <Switch
+            id={`status-${row.original.id}`}
+            checked={status === "Active"}
+            onCheckedChange={(checked) => {
+              toast.promise(
+                toggleWalletStatus(row.original.id, checked ? "Active" : "Inactive"),
+                {
+                  loading: "Updating wallet status...",
+                  success: "Status updated successfully!",
+                  error: "Failed to update status."
+                }
+              )
+            }}
+            aria-label="Toggle status"
+          />
+          <Label htmlFor={`status-${row.original.id}`}>{status}</Label>
+        </div>
       )
     },
   },
