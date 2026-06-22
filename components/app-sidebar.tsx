@@ -1,32 +1,29 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import {
   AudioWaveform,
   BookOpen,
-  Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
   LayoutDashboardIcon,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-  Wallet2,
   WalletMinimal,
 } from "lucide-react"
 
-import { usePathname } from "next/navigation"
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
 
@@ -60,12 +57,19 @@ const data = {
       url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
+  ],
+  navMaster: [
     {
       title: "Wallet Management",
       url: "/wallet-management",
       icon: WalletMinimal,
     },
-  ]
+    {
+      title: "Expense Category",
+      url: "/expense-category",
+      icon: BookOpen,
+    },
+  ],
 }
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
@@ -81,7 +85,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   const navItems = data.navMain.map((item) => ({
     ...item,
-    isActive: pathname === item.url,
+    isActive: pathname === item.url || pathname.startsWith(`${item.url}/`),
   }))
 
   return (
@@ -91,6 +95,21 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
+        <SidebarGroup>
+          <SidebarGroupLabel>Master</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.navMaster.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} isActive={pathname === item.url || pathname.startsWith(`${item.url}/`)}>
+                  <a href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user ?? data.user} />
