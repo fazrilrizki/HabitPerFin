@@ -3,11 +3,13 @@
 import * as React from "react"
 import { usePathname } from "next/navigation"
 import {
+  ArrowUpRight,
   AudioWaveform,
   BookOpen,
   Command,
   GalleryVerticalEnd,
   LayoutDashboardIcon,
+  TrendingDown,
   WalletMinimal,
 } from "lucide-react"
 
@@ -70,6 +72,13 @@ const data = {
       icon: BookOpen,
     },
   ],
+  navTransaction: [
+    {
+      title: "Expense",
+      url: "/expense",
+      icon: TrendingDown
+    }
+  ]
 }
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
@@ -99,6 +108,21 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarGroupLabel>Master</SidebarGroupLabel>
           <SidebarMenu>
             {data.navMaster.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} isActive={pathname === item.url || pathname.startsWith(`${item.url}/`)}>
+                  <a href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Transaction</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.navTransaction.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild tooltip={item.title} isActive={pathname === item.url || pathname.startsWith(`${item.url}/`)}>
                   <a href={item.url}>
