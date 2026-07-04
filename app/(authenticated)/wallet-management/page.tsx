@@ -19,19 +19,10 @@ import { getData } from "./actions";
 import { AddWalletDialog } from "./add-wallet-dialog";
 
 export default async function Page() {
-  const session = await auth0.getSession();
-  const user = session?.user;
-  if (!session) redirect("/auth/login");
   const data = await getData();
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={{
-          name: user?.nickname ?? "",
-          email: user?.email ?? "",
-          avatar: user?.picture ?? "",
-        }} />
-      <SidebarInset>
+    <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -56,7 +47,6 @@ export default async function Page() {
                 <DataTable columns={columns} data={data}/>
             </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+    </SidebarInset>
   )
 }
