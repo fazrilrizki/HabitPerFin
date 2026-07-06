@@ -2,8 +2,10 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import FormCreate from "./form";
+import { getExpenseCategoryOptions } from "../../expense-category/actions";
 
 export default async function Page() {
+    const categoryOptions = await getExpenseCategoryOptions();
     return (
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -39,7 +41,7 @@ export default async function Page() {
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
-                    <FormCreate />
+                    <FormCreate categoryOptions={categoryOptions}/>
                 </div>
             </div>
         </SidebarInset>

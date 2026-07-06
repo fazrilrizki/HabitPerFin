@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import z from "zod"
 import { ExpenseCategory } from "./columns"
+import { SelectOption } from "@/components/ui/select-custom"
 
 export async function getData(): Promise<ExpenseCategory[]> {
   const categories = await prisma.expenseCategory.findMany({
@@ -21,7 +22,7 @@ export async function getData(): Promise<ExpenseCategory[]> {
 const createCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   categoryType: z.enum(["Primer", "Non-Primer"]),
-  budgetLimit: z.string().min(1, "Budget limit is required")
+  budgetLimit: z.string().min(1, "Budget limit is required"),
 })
 
 export async function createCategory(formData: FormData) {
@@ -92,4 +93,17 @@ export async function deleteCategory(id: string) {
   })
 
   revalidatePath("/expense-category")
+}
+
+export async function getExpenseCategoryOptions(): Promise<SelectOption[]> {
+  const categories = await prisma.expenseCategory.findMany({
+    where: {
+      status: "Active"
+    },
+    orderBy: { name: "asc" }
+  });
+  return categories.map(c => ({
+    value: String(c.id),
+    label: c.name
+  }));
 }
