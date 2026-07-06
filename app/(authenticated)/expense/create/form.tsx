@@ -17,8 +17,12 @@ import React, { useRef, useTransition } from "react";
 import { createExpense } from "../actions";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/datepicker";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectCustom, { SelectOption } from "@/components/ui/select-custom";
 
-export default function FormCreate() {
+export default function FormCreate({ categoryOptions }: {
+  categoryOptions: SelectOption[]
+}) {
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -42,20 +46,26 @@ export default function FormCreate() {
         <CardContent>
           <FieldGroup>
             <Field>
-              <Label htmlFor="name">Amount</Label>
-              <Input
-                id="amount"
-                name="amount"
-                type="number"
-                placeholder="Rp. 0"
-                required
-                min="0"
-              />
+              <Label htmlFor="category">Expense Category</Label>
+              <SelectCustom name="category_id" options={categoryOptions} placeholder="Select a Expense Category"/>
             </Field>
-            <Field>
-              <Label htmlFor="name">Transaction Date</Label>
-              <DatePicker name="transaction_date" />
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <Label htmlFor="amount">Amount</Label>
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  placeholder="Rp. 0"
+                  required
+                  min="0"
+                />
+              </Field>
+              <Field>
+                <Label htmlFor="transaction_date">Transaction Date</Label>
+                <DatePicker name="transaction_date" />
+              </Field>
+            </div>
             <Field>
               <Label htmlFor="name">Description</Label>
               <Textarea id="description" name="description" placeholder="Tell about your expense description" />
