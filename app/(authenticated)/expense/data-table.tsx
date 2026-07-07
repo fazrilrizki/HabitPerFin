@@ -1,11 +1,17 @@
 "use client"
 
+import * as React from "react"
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getGroupedRowModel,
+  getExpandedRowModel,
+  GroupingState,
+  ExpandedState,
 } from "@tanstack/react-table"
+import { ChevronRight, ChevronDown } from "lucide-react"
 
 import {
   Table,
@@ -28,6 +34,13 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    state: {
+      grouping: ['expenseCategory']
+    },
+    autoResetExpanded: false,
+    autoResetPageIndex: false,
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -59,11 +72,26 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().some(c => c.getIsGrouped()) ? (
+                  (() => {
+                    const groupedCell = row.getVisibleCells().find(c => c.getIsGrouped())!;
+                    return (
+                      <TableCell colSpan={row.getVisibleCells().length} className="bg-muted/50 hover:bg-muted/80 cursor-pointer" onClick={row.getToggleExpandedHandler()}>
+                        <div className="flex items-center gap-2 font-semibold">
+                          {row.getIsExpanded() ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                          {flexRender(groupedCell.column.columnDef.cell, groupedCell.getContext())} ({row.subRows.length})
+                        </div>
+                      </TableCell>
+                    );
+                  })()
+                ) : (
+                  row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                       {/* Untuk row data biasa, kita bisa mengosongkan sel kategori agar tidak berulang, atau biarkan saja. Kita biarkan null jika itu kolom kategori agar bersih. */}
+                       {cell.column.id === "expenseCategory" ? null : flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))
+                )}
               </TableRow>
             ))
           ) : (

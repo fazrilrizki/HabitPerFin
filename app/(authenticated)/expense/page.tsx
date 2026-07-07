@@ -3,7 +3,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/co
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { auth0 } from "@/lib/auth0";
-import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/navigation";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { getData } from "./actions";
