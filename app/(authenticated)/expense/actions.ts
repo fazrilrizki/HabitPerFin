@@ -8,7 +8,8 @@ import { revalidatePath } from "next/cache";
 
 export async function getData(): Promise<Expense[]> {
     const expense = await prisma.expense.findMany({
-        orderBy: { createdAt: "desc" }
+        orderBy: { createdAt: "desc" },
+        include: { expenseCategory: true }
     })
 
     return expense.map(c => ({
@@ -16,6 +17,7 @@ export async function getData(): Promise<Expense[]> {
         amount: Number(c.amount),
         description: c.description,
         transactionDate: c.transactionDate,
+        expenseCategory: c.expenseCategory.name,
     }))
 }
 
