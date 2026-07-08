@@ -27,6 +27,28 @@ export const columns: ColumnDef<Expense>[] = [
         cell: ({row}) => {
             const date = new Date(row.getValue("transactionDate"));
             return <div>{date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+        },
+        filterFn: (row, columnId, filterValue) => {
+            if (!filterValue) return true;
+            const rowDate = new Date(row.getValue(columnId));
+            const from = filterValue.from ? new Date(filterValue.from) : undefined;
+            const to = filterValue.to ? new Date(filterValue.to) : undefined;
+
+            if (from) {
+                from.setHours(0, 0, 0, 0);
+            }
+            if (to) {
+                to.setHours(23, 59, 59, 999);
+            }
+            
+            if (from && to) {
+                return rowDate >= from && rowDate <= to;
+            } else if (from) {
+                return rowDate >= from;
+            } else if (to) {
+                return rowDate <= to;
+            }
+            return true;
         }
     },
     {
