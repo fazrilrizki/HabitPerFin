@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/datepicker";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SelectCustom, { SelectOption } from "@/components/ui/select-custom";
+import Link from "next/link";
 
 export default function FormCreate({ categoryOptions }: {
   categoryOptions: SelectOption[]
@@ -75,7 +76,9 @@ export default function FormCreate({ categoryOptions }: {
         <CardFooter className="mt-4">
           <Field orientation="horizontal">
             <Button type="button" variant="outline" disabled={isPending}>
-              Cancel
+              <Link href="/expense">
+                Cancel
+              </Link>
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Saving..." : "Save changes"}

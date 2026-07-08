@@ -9,6 +9,7 @@ import { columns } from "./columns";
 import { getData } from "./actions";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import Link from "next/link";
 
 export default async function ExpensePage() {
   const session = await auth0.getSession();
@@ -36,11 +37,11 @@ export default async function ExpensePage() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
-            <a href="/expense/create">
-              <Button variant="outline" size="sm" className="w-fit">
+            <Button variant="outline" size="sm" className="w-fit" asChild>
+              <Link href="/expense/create">
                 <PlusCircle /> Add Expense
-              </Button>
-            </a>
+              </Link>
+            </Button>
             <DataTable columns={columns} data={data}/>
           </div>
         </div>
