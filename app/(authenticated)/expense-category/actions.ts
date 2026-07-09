@@ -5,9 +5,14 @@ import { revalidatePath } from "next/cache"
 import z from "zod"
 import { ExpenseCategory } from "./columns"
 import { SelectOption } from "@/components/ui/select-custom"
+import { auth0 } from "@/lib/auth0"
 
 export async function getData(): Promise<ExpenseCategory[]> {
+  const session = await auth0.getSession();
+  if (!session?.user) return [];
+
   const categories = await prisma.expenseCategory.findMany({
+    where: { userId: session.user.sub },
     orderBy: { createdAt: "desc" }
   })
   return categories.map(c => ({
@@ -36,12 +41,16 @@ export async function createCategory(formData: FormData) {
     return
   }
 
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
   await prisma.expenseCategory.create({
     data: {
       name: parsed.data.name,
       categoryType: parsed.data.categoryType,
       budgetLimit: parsed.data.budgetLimit,
       status: "Active",
+      userId: session.user.sub,
     }
   })
 
@@ -49,8 +58,11 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function toggleCategoryStatus(id: string, status: "Active" | "Inactive") {
-  await prisma.expenseCategory.update({
-    where: { id: parseInt(id) },
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.expenseCategory.updateMany({
+    where: { id: parseInt(id), userId: session.user.sub },
     data: { status }
   })
   revalidatePath("/expense-category")
@@ -75,8 +87,11 @@ export async function updateCategory(formData: FormData) {
     return
   }
 
-  await prisma.expenseCategory.update({
-    where: { id: parseInt(parsed.data.id) },
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.expenseCategory.updateMany({
+    where: { id: parseInt(parsed.data.id), userId: session.user.sub },
     data: {
       name: parsed.data.name,
       categoryType: parsed.data.categoryType,
@@ -88,17 +103,24 @@ export async function updateCategory(formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
-  await prisma.expenseCategory.delete({
-    where: { id: parseInt(id) }
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.expenseCategory.deleteMany({
+    where: { id: parseInt(id), userId: session.user.sub }
   })
 
   revalidatePath("/expense-category")
 }
 
 export async function getExpenseCategoryOptions(): Promise<SelectOption[]> {
+  const session = await auth0.getSession();
+  if (!session?.user) return [];
+
   const categories = await prisma.expenseCategory.findMany({
     where: {
-      status: "Active"
+      status: "Active",
+      userId: session.user.sub
     },
     orderBy: { name: "asc" }
   });

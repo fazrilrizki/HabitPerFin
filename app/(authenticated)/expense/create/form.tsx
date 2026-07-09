@@ -13,7 +13,7 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useRef, useTransition } from "react";
+import React, { useRef, useState, useTransition } from "react";
 import { createExpense } from "../actions";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/datepicker";
@@ -26,6 +26,7 @@ export default function FormCreate({ categoryOptions }: {
 }) {
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,6 +34,7 @@ export default function FormCreate({ categoryOptions }: {
     startTransition(async () => {
       await createExpense(formData);
       formRef.current?.reset();
+      setResetKey(prev => prev + 1)
       toast.success("Expense created succcessfully");
     });
   }
@@ -48,7 +50,7 @@ export default function FormCreate({ categoryOptions }: {
           <FieldGroup>
             <Field>
               <Label htmlFor="category">Expense Category</Label>
-              <SelectCustom name="category_id" options={categoryOptions} placeholder="Select a Expense Category"/>
+              <SelectCustom key={resetKey} name="category_id" options={categoryOptions} placeholder="Select a Expense Category"/>
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field>
@@ -64,7 +66,7 @@ export default function FormCreate({ categoryOptions }: {
               </Field>
               <Field>
                 <Label htmlFor="transaction_date">Transaction Date</Label>
-                <DatePicker name="transaction_date" />
+                <DatePicker key={resetKey} name="transaction_date" />
               </Field>
             </div>
             <Field>
