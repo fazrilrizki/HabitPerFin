@@ -5,10 +5,15 @@ import { Expense } from "./columns";
 import z from "zod";
 import { parse } from "path";
 import { revalidatePath } from "next/cache";
+import { auth0 } from "@/lib/auth0";
 
 export async function getData(): Promise<Expense[]> {
+    const session = await auth0.getSession();
+    if (!session?.user) return [];
+
     const expense = await prisma.expense.findMany({
-        orderBy: { createdAt: "desc" },
+        where: { userId: session.user.sub },
+        orderBy: { transactionDate: "desc" },
         include: { expenseCategory: true }
     })
 
@@ -40,12 +45,16 @@ export async function createExpense(formData: FormData) {
         return
     }
 
+    const session = await auth0.getSession();
+    if (!session?.user) return;
+
     await prisma.expense.create({
         data: {
             amount: parsed.data.amount,
             transactionDate: parsed.data.transaction_date,
             description: parsed.data.description,
-            expense_category_id: parseInt(parsed.data.category_id)
+            expense_category_id: parseInt(parsed.data.category_id),
+            userId: session.user.sub
         }
     })
 
@@ -53,8 +62,14 @@ export async function createExpense(formData: FormData) {
 }
 
 export async function deleteExpense(id: string) {
-    await prisma.expense.delete({
-        where: { id: parseInt(id) }
+    const session = await auth0.getSession();
+    if (!session?.user) return;
+
+    await prisma.expense.deleteMany({
+        where: { 
+            id: parseInt(id),
+            userId: session.user.sub
+        }
     })
 
     revalidatePath("/expense")

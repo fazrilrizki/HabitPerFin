@@ -13,6 +13,7 @@ model WalletManagements {
   initial_balance Decimal  @db.Decimal(15, 2)
   status          String
   createdAt       DateTime @default(now()) @map("created_at")
+  userId          String   @default("system")
 
   @@map("wallet_managements")
 }
@@ -24,6 +25,7 @@ model ExpenseCategory {
   budgetLimit  Decimal   @db.Decimal(15, 2)
   status       String
   createdAt    DateTime  @default(now()) @map("created_at")
+  userId       String    @default("system")
   expenses     Expense[]
 
   @@map("expense_categories")
@@ -35,6 +37,7 @@ model Expense {
   description         String          @db.Text
   transactionDate     DateTime        @map("transaction_date") @db.Date
   createdAt           DateTime        @default(now()) @map("created_at")
+  userId              String          @default("system")
   expense_category_id Int
   expenseCategory     ExpenseCategory @relation(fields: [expense_category_id], references: [id])
 

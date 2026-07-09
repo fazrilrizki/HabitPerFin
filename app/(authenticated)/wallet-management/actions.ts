@@ -4,9 +4,14 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import z from "zod"
 import { WalletManagement } from "./columns"
+import { auth0 } from "@/lib/auth0"
 
 export async function getData(): Promise<WalletManagement[]> {
+  const session = await auth0.getSession();
+  if (!session?.user) return [];
+
   const wallets = await prisma.walletManagements.findMany({
+    where: { userId: session.user.sub },
     orderBy: { createdAt: "desc" }
   })
   return wallets.map(w => ({
@@ -32,11 +37,15 @@ export async function createWallet(formData: FormData) {
     return
   }
 
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
   await prisma.walletManagements.create({
     data: {
       name: parsed.data.name,
       initial_balance: parsed.data.initial_balance,
       status: "Active",
+      userId: session.user.sub,
     }
   })
 
@@ -44,8 +53,11 @@ export async function createWallet(formData: FormData) {
 }
 
 export async function toggleWalletStatus(id: string, status: "Active" | "Inactive") {
-  await prisma.walletManagements.update({
-    where: { id: parseInt(id) },
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.walletManagements.updateMany({
+    where: { id: parseInt(id), userId: session.user.sub },
     data: { status }
   })
   revalidatePath("/wallet-management")
@@ -68,8 +80,11 @@ export async function updateWallet(formData: FormData) {
     return
   }
 
-  await prisma.walletManagements.update({
-    where: { id: parseInt(parsed.data.id) },
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.walletManagements.updateMany({
+    where: { id: parseInt(parsed.data.id), userId: session.user.sub },
     data: {
       name: parsed.data.name,
       initial_balance: parsed.data.initial_balance,
@@ -80,8 +95,11 @@ export async function updateWallet(formData: FormData) {
 }
 
 export async function deleteWallet(id: string) {
-  await prisma.walletManagements.delete({
-    where: { id: parseInt(id) }
+  const session = await auth0.getSession();
+  if (!session?.user) return;
+
+  await prisma.walletManagements.deleteMany({
+    where: { id: parseInt(id), userId: session.user.sub }
   })
 
   revalidatePath("/wallet-management")

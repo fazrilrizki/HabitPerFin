@@ -17,7 +17,7 @@ export function DatePicker({ name }: { name?: string }) {
 
   return (
     <>
-      {name && <input type="hidden" name={name} value={date ? date.toISOString() : ""} />}
+      {name && <input type="hidden" name={name} value={date ? format(date, "yyyy-MM-dd") : ""} />}
       <Popover>
       <PopoverTrigger asChild>
         <Button variant={"outline"} data-empty={!date} className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground">
