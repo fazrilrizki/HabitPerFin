@@ -14,6 +14,7 @@ model WalletManagements {
   status          String
   createdAt       DateTime @default(now()) @map("created_at")
   userId          String   @default("system")
+  incomes         Income[]
 
   @@map("wallet_managements")
 }
@@ -43,6 +44,20 @@ model Expense {
 
   @@index([expense_category_id], map: "expense_expense_category_id_fkey")
   @@map("expense")
+}
+
+model Income {
+  id                   Int               @id @default(autoincrement())
+  amount               Decimal           @db.Decimal(15, 2)
+  description           String            @db.Text
+  transactionDate      DateTime          @map("transaction_date") @db.Date
+  createdAt            DateTime          @default(now()) @map("created_at")
+  userId               String            @default("system")
+  wallet_management_id Int
+  walletManagements    WalletManagements @relation(fields: [wallet_management_id], references: [id])
+
+  @@index([wallet_management_id], map: "income_wallet_management_id_fkey")
+  @@map("incomes")
 }
 
 model user {

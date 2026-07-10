@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   ArrowUpRight,
   AudioWaveform,
+  BanknoteArrowUp,
   BookOpen,
   Command,
   GalleryVerticalEnd,
@@ -77,6 +78,11 @@ const data = {
       title: "Expense",
       url: "/expense",
       icon: TrendingDown
+    },
+    {
+      title: "Income",
+      url: "/income",
+      icon: BanknoteArrowUp
     }
   ]
 }
