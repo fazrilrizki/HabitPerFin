@@ -6,7 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from "@/components/ui/button"
 import { Trash2, Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
-import { deleteExpense } from "./actions"
+import { deleteIncome } from "./actions"
 
 export type Income = {
     id: string
@@ -90,7 +90,7 @@ export const columns: ColumnDef<Income>[] = [
                     <AlertDialogFooter>
                         <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                         <AlertDialogAction variant="destructive" onClick={() => {
-                            toast.promise(deleteExpense(row.original.id), {
+                            toast.promise(deleteIncome(row.original.id), {
                             loading: "Deleting expense...",
                             success: "Expense deleted successfully!",
                             error: "Failed to delete expense."
