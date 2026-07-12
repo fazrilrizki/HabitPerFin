@@ -8,6 +8,7 @@ import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function ExpenseCategoryPage() {
   const session = await auth0.getSession();

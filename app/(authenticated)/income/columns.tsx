@@ -13,9 +13,14 @@ export type Income = {
     amount: number
     description: string
     transactionDate: Date
+    wallet: string
 }
 
 export const columns: ColumnDef<Income>[] = [
+    {
+        accessorKey: "wallet",
+        header: "Wallet",
+    },
     {
         accessorKey: "transactionDate",
         header: "Date",

@@ -12,14 +12,16 @@ export async function getData(): Promise<Income[]> {
 
     const income = await prisma.income.findMany({
         where: { userId: session.user.sub },
-        orderBy: { transactionDate: "desc" }
+        orderBy: { transactionDate: "desc" },
+        include: { walletManagements: true }
     })
 
     return income.map(c => ({
         id: String(c.id),
         amount: Number(c.amount),
         description: c.description,
-        transactionDate: c.transactionDate
+        transactionDate: c.transactionDate,
+        wallet: c.walletManagements.name
     }))
 }
 
