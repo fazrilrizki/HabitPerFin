@@ -5,6 +5,10 @@ import { auth0 } from "@/lib/auth0";
 import { DataTable } from "./data-table";
 import { getData } from "./actions";
 import { columns } from "./columns";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { PlusCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function ExpenseCategoryPage() {
   const session = await auth0.getSession();
@@ -33,6 +37,11 @@ export default async function ExpenseCategoryPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <Button variant="outline" size="sm" className="w-fit" asChild>
+              <Link href="/income/create">
+                <PlusCircle /> Add Income
+              </Link>
+            </Button>
             <DataTable columns={columns} data={data}/>
         </div>
     </SidebarInset>

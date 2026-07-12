@@ -41,6 +41,7 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     state: {
+      grouping: ['wallet'],
       columnFilters
     },
     autoResetExpanded: false,
@@ -112,8 +113,7 @@ export function DataTable<TData, TValue>({
                   ) : (
                     row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {/* Untuk row data biasa, kita bisa mengosongkan sel kategori agar tidak berulang, atau biarkan saja. Kita biarkan null jika itu kolom kategori agar bersih. */}
-                        {cell.column.id === "expenseCategory" ? null : flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {cell.column.id === "wallet" ? null : flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))
                   )}

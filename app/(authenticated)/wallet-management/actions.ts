@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import z from "zod"
 import { WalletManagement } from "./columns"
 import { auth0 } from "@/lib/auth0"
+import { SelectOption } from "@/components/ui/select-custom"
 
 export async function getData(): Promise<WalletManagement[]> {
   const session = await auth0.getSession();
@@ -103,4 +104,21 @@ export async function deleteWallet(id: string) {
   })
 
   revalidatePath("/wallet-management")
+}
+
+export async function getWalletManagementOptions(): Promise<SelectOption[]> {
+  const session = await auth0.getSession();
+  if (!session?.user) return [];
+
+  const walletManagements = await prisma.walletManagements.findMany({
+    where: {
+      status: "Active",
+      userId: session.user.sub
+    },
+    orderBy: { name: "asc" }
+  });
+  return walletManagements.map(c => ({
+    value: String(c.id),
+    label: c.name
+  }));
 }
