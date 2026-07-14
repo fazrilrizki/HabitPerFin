@@ -87,9 +87,9 @@ export const columns: ColumnDef<Expense>[] = [
                         <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                         <Trash2Icon />
                     </AlertDialogMedia>
-                    <AlertDialogTitle>Delete category?</AlertDialogTitle>
+                    <AlertDialogTitle>Delete expense?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This will permanently delete this category. This action cannot be undone.
+                        This will permanently delete this expense. This action cannot be undone.
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

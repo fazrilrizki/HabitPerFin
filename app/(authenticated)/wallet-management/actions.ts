@@ -45,6 +45,7 @@ export async function createWallet(formData: FormData) {
     data: {
       name: parsed.data.name,
       initial_balance: parsed.data.initial_balance,
+      remaining_balance: parsed.data.initial_balance,
       status: "Active",
       userId: session.user.sub,
     }

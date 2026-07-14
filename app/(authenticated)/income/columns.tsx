@@ -87,18 +87,18 @@ export const columns: ColumnDef<Income>[] = [
                         <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                         <Trash2Icon />
                     </AlertDialogMedia>
-                    <AlertDialogTitle>Delete category?</AlertDialogTitle>
+                    <AlertDialogTitle>Delete income?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This will permanently delete this category. This action cannot be undone.
+                        This will permanently delete this income. This action cannot be undone.
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
                         <AlertDialogAction variant="destructive" onClick={() => {
                             toast.promise(deleteIncome(row.original.id), {
-                            loading: "Deleting expense...",
-                            success: "Expense deleted successfully!",
-                            error: "Failed to delete expense."
+                            loading: "Deleting income...",
+                            success: "Income deleted successfully!",
+                            error: "Failed to delete income."
                             })
                         }}>
                         Delete
