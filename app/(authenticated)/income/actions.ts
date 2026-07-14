@@ -57,6 +57,17 @@ export async function createIncome(formData: FormData) {
         }
     })
 
+    await prisma.walletManagements.update({
+        where: { 
+            id: parseInt(parsed.data.wallet_id)
+        },
+        data : {
+            remaining_balance: {
+                increment: Number(parsed.data.amount)
+            }
+        }
+    })
+
     revalidatePath("/income")
 }
 

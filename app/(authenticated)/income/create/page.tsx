@@ -41,7 +41,7 @@ export default async function IncomeCreatePage() {
         </div>
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
+        <div className="container flex flex-1 flex-col gap-4 rounded-xl md:min-h-min p-4">
           <FormCreate walletManagementOptions={walletManagementOptions}/>
         </div>
       </div>
