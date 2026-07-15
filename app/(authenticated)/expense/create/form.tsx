@@ -21,7 +21,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import SelectCustom, { SelectOption } from "@/components/ui/select-custom";
 import Link from "next/link";
 
-export default function FormCreate({ categoryOptions }: {
+export default function FormCreate({ walletManagementOptions, categoryOptions }: {
+  walletManagementOptions: SelectOption[],
   categoryOptions: SelectOption[]
 }) {
   const [isPending, startTransition] = useTransition();
@@ -48,10 +49,17 @@ export default function FormCreate({ categoryOptions }: {
       <form ref={formRef} onSubmit={handleSubmit}>
         <CardContent>
           <FieldGroup>
-            <Field>
-              <Label htmlFor="category">Expense Category</Label>
-              <SelectCustom key={resetKey} name="category_id" options={categoryOptions} placeholder="Select a Expense Category"/>
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <Label htmlFor="category">Wallet</Label>
+                <SelectCustom key={resetKey} name="wallet_id" options={walletManagementOptions} placeholder="Select a Wallet"/>
+              </Field>
+              <Field>
+                <Label htmlFor="category">Expense Category</Label>
+                <SelectCustom key={resetKey} name="category_id" options={categoryOptions} placeholder="Select a Expense Category"/>
+              </Field>
+
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <Field>
                 <Label htmlFor="amount">Amount</Label>
