@@ -3,8 +3,10 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import FormCreate from "./form";
 import { getExpenseCategoryOptions } from "../../expense-category/actions";
+import { getWalletManagementOptions } from "../../wallet-management/actions";
 
 export default async function Page() {
+    const walletManagementOptions = await getWalletManagementOptions();
     const categoryOptions = await getExpenseCategoryOptions();
     return (
         <SidebarInset>
@@ -41,7 +43,7 @@ export default async function Page() {
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
-                    <FormCreate categoryOptions={categoryOptions}/>
+                    <FormCreate walletManagementOptions={walletManagementOptions} categoryOptions={categoryOptions}/>
                 </div>
             </div>
         </SidebarInset>

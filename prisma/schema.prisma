@@ -8,14 +8,15 @@ datasource db {
 }
 
 model WalletManagements {
-  id                Int      @id @default(autoincrement())
+  id                Int       @id @default(autoincrement())
   name              String
-  initial_balance   Decimal  @db.Decimal(15, 2)
+  initial_balance   Decimal   @db.Decimal(15, 2)
   status            String
-  createdAt         DateTime @default(now()) @map("created_at")
-  userId            String   @default("system")
-  remaining_balance Decimal  @default(0.00) @db.Decimal(15, 2)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  userId            String    @default("system")
+  remaining_balance Decimal   @default(0.00) @db.Decimal(15, 2)
   incomes           Income[]
+  expense           Expense[]
 
   @@map("wallet_managements")
 }
@@ -34,16 +35,19 @@ model ExpenseCategory {
 }
 
 model Expense {
-  id                  Int             @id @default(autoincrement())
-  amount              Decimal         @db.Decimal(15, 2)
-  description         String          @db.Text
-  transactionDate     DateTime        @map("transaction_date") @db.Date
-  createdAt           DateTime        @default(now()) @map("created_at")
-  expense_category_id Int
-  userId              String          @default("system")
-  expenseCategory     ExpenseCategory @relation(fields: [expense_category_id], references: [id])
+  id                   Int                @id @default(autoincrement())
+  amount               Decimal            @db.Decimal(15, 2)
+  description          String             @db.Text
+  transactionDate      DateTime           @map("transaction_date") @db.Date
+  createdAt            DateTime           @default(now()) @map("created_at")
+  expense_category_id  Int
+  userId               String             @default("system")
+  wallet_management_id Int?
+  expenseCategory      ExpenseCategory    @relation(fields: [expense_category_id], references: [id])
+  walletManagements    WalletManagements? @relation(fields: [wallet_management_id], references: [id])
 
   @@index([expense_category_id], map: "expense_expense_category_id_fkey")
+  @@index([wallet_management_id], map: "expense_wallet_management_id_fkey")
   @@map("expense")
 }
 

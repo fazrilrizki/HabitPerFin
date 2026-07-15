@@ -31,6 +31,7 @@ const createExpenseSchema = z.object({
     transaction_date: z.string().min(1, "Transaction date is required").transform((str) => new Date(str)),
     description: z.string(),
     category_id: z.string().min(1, "Category is required"),
+    wallet_id: z.string().min(1, "Wallet is required")
 })
 
 export async function createExpense(formData: FormData) {
@@ -38,7 +39,8 @@ export async function createExpense(formData: FormData) {
         amount: formData.get("amount"),
         transaction_date: formData.get("transaction_date"),
         description: formData.get("description"),
-        category_id: formData.get("category_id")
+        category_id: formData.get("category_id"),
+        wallet_id: formData.get("wallet_id")
     })
 
     if (!parsed.success) {
@@ -54,6 +56,7 @@ export async function createExpense(formData: FormData) {
             transactionDate: parsed.data.transaction_date,
             description: parsed.data.description,
             expense_category_id: parseInt(parsed.data.category_id),
+            wallet_management_id: parseInt(parsed.data.wallet_id),
             userId: session.user.sub
         }
     })
