@@ -61,6 +61,17 @@ export async function createExpense(formData: FormData) {
         }
     })
 
+    await prisma.walletManagements.update({
+        where: { 
+            id: parseInt(parsed.data.wallet_id)
+        },
+        data : {
+            remaining_balance: {
+                decrement: Number(parsed.data.amount)
+            }
+        }
+    })
+
     revalidatePath("/expense")
 }
 
@@ -68,10 +79,25 @@ export async function deleteExpense(id: string) {
     const session = await auth0.getSession();
     if (!session?.user) return;
 
+    const expense = await prisma.expense.findFirst({
+        where: { id: parseInt(id) }
+    })
+
     await prisma.expense.deleteMany({
         where: { 
             id: parseInt(id),
             userId: session.user.sub
+        }
+    })
+    
+    await prisma.walletManagements.update({
+        where: { 
+            id: expense?.wallet_management_id
+        },
+        data : {
+            remaining_balance: {
+                increment: Number(expense?.amount)
+            }
         }
     })
 
