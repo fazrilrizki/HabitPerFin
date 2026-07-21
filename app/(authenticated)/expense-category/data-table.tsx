@@ -5,7 +5,11 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getFilteredRowModel,
 } from "@tanstack/react-table"
+import * as React from "react"
+import { Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
 import {
   Table,
@@ -19,21 +23,42 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  actionButton?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  actionButton,
 }: DataTableProps<TData, TValue>) {
+  const [globalFilter, setGlobalFilter] = React.useState("")
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
   })
 
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
+    <div className="w-full overflow-hidden rounded-xl border border-border/50 bg-background/50">
+      <div className="flex items-center justify-between p-4 border-b border-border/50">
+        <div className="relative w-72">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search..."
+            value={globalFilter ?? ""}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="pl-9 bg-muted/50 border-border/50"
+          />
+        </div>
+        {actionButton}
+      </div>
+      <div className="overflow-x-auto">
+        <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -75,6 +100,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   )
 }

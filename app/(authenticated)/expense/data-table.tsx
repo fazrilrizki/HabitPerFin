@@ -11,7 +11,8 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
 } from "@tanstack/react-table"
-import { ChevronRight, ChevronDown } from "lucide-react"
+import { ChevronRight, ChevronDown, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
 import {
   Table,
@@ -27,22 +28,26 @@ import { Button } from "@/components/ui/button"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  actionButton?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  actionButton,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
     data,
     columns,
     state: {
       grouping: ['expenseCategory'],
-      columnFilters
+      columnFilters,
+      globalFilter
     },
     autoResetExpanded: false,
     autoResetPageIndex: false,
@@ -51,20 +56,33 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
   })
 
   return (
-    <div>
-      <div className="py-4 flex items-center justify-end gap-2">
-        <DatePickerWithRange 
-          date={table.getColumn("transactionDate")?.getFilterValue() as any}
-          setDate={(date) => table.getColumn("transactionDate")?.setFilterValue(date)}
-        />
-        <Button variant="outline" onClick={() => table.getColumn("transactionDate")?.setFilterValue(null)}>
-          Reset
-        </Button>
+    <div className="w-full overflow-hidden rounded-xl border border-border/50 bg-background/50">
+      <div className="flex items-center justify-between p-4 border-b border-border/50">
+        <div className="flex items-center gap-2">
+          <div className="relative w-64 md:w-72">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={globalFilter ?? ""}
+              onChange={(event) => setGlobalFilter(event.target.value)}
+              className="pl-9 bg-muted/50 border-border/50"
+            />
+          </div>
+          <DatePickerWithRange 
+            date={table.getColumn("transactionDate")?.getFilterValue() as any}
+            setDate={(date) => table.getColumn("transactionDate")?.setFilterValue(date)}
+          />
+          <Button variant="outline" onClick={() => table.getColumn("transactionDate")?.setFilterValue(null)}>
+            Reset
+          </Button>
+        </div>
+        {actionButton}
       </div>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

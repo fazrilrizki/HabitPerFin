@@ -113,7 +113,12 @@ export async function deleteCategory(id: string) {
   revalidatePath("/expense-category")
 }
 
-export async function getExpenseCategoryOptions(): Promise<SelectOption[]> {
+export type ExpenseCategoryOption = SelectOption & {
+  budgetLimit: number;
+  spent: number;
+};
+
+export async function getExpenseCategoryOptions(): Promise<ExpenseCategoryOption[]> {
   const session = await auth0.getSession();
   if (!session?.user) return [];
 
@@ -124,8 +129,34 @@ export async function getExpenseCategoryOptions(): Promise<SelectOption[]> {
     },
     orderBy: { name: "asc" }
   });
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const expenses = await prisma.expense.groupBy({
+    by: ['expense_category_id'],
+    where: {
+      userId: session.user.sub,
+      transactionDate: {
+        gte: startOfMonth,
+        lt: endOfMonth,
+      }
+    },
+    _sum: {
+      amount: true
+    }
+  });
+
+  const spentMap = new Map();
+  expenses.forEach(e => {
+    spentMap.set(e.expense_category_id, Number(e._sum.amount || 0));
+  });
+
   return categories.map(c => ({
     value: String(c.id),
-    label: c.name
+    label: c.name,
+    budgetLimit: Number(c.budgetLimit),
+    spent: spentMap.get(c.id) || 0
   }));
 }
