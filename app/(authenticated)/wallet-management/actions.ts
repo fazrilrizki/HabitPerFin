@@ -107,7 +107,9 @@ export async function deleteWallet(id: string) {
   revalidatePath("/wallet-management")
 }
 
-export async function getWalletManagementOptions(): Promise<SelectOption[]> {
+export type WalletOption = SelectOption & { remaining_balance: number };
+
+export async function getWalletManagementOptions(): Promise<WalletOption[]> {
   const session = await auth0.getSession();
   if (!session?.user) return [];
 
@@ -120,6 +122,7 @@ export async function getWalletManagementOptions(): Promise<SelectOption[]> {
   });
   return walletManagements.map(c => ({
     value: String(c.id),
-    label: c.name
+    label: c.name,
+    remaining_balance: Number(c.remaining_balance)
   }));
 }

@@ -17,15 +17,20 @@ import React, { useRef, useState, useTransition } from "react";
 import { createIncome } from "../actions";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/datepicker";
-import SelectCustom, { SelectOption } from "@/components/ui/select-custom";
+import SelectCustom from "@/components/ui/select-custom";
 import Link from "next/link";
+import { WalletOption } from "../../wallet-management/actions";
+import { Wallet } from "lucide-react";
 
 export default function FormCreate({ walletManagementOptions }: {
-    walletManagementOptions: SelectOption[]
+    walletManagementOptions: WalletOption[]
 }) {
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const [resetKey, setResetKey] = useState(0);
+  const [selectedWalletId, setSelectedWalletId] = useState<string | undefined>();
+
+  const selectedWallet = walletManagementOptions.find(w => w.value === selectedWalletId);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,6 +39,7 @@ export default function FormCreate({ walletManagementOptions }: {
       await createIncome(formData);
       formRef.current?.reset();
       setResetKey(prev => prev + 1)
+      setSelectedWalletId(undefined)
       toast.success("Income created succcessfully");
     });
   }
@@ -49,7 +55,18 @@ export default function FormCreate({ walletManagementOptions }: {
           <FieldGroup>
             <Field>
                 <Label htmlFor="wallet">Wallet</Label>
-                <SelectCustom key={resetKey} name="wallet_id" options={walletManagementOptions} placeholder="Select a Wallet"/>
+                <SelectCustom key={resetKey} name="wallet_id" options={walletManagementOptions} placeholder="Select a Wallet" onValueChange={setSelectedWalletId}/>
+                {selectedWallet && (
+                  <div className="mt-2 flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2.5 text-sm text-primary shadow-sm border border-primary/20">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4" />
+                      <span className="font-medium">Balance</span>
+                    </div>
+                    <span className="font-bold tracking-tight">
+                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(selectedWallet.remaining_balance)}
+                    </span>
+                  </div>
+                )}
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field>
