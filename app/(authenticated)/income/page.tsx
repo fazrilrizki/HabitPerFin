@@ -37,12 +37,19 @@ export default async function ExpenseCategoryPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <Button variant="outline" size="sm" className="w-fit" asChild>
-              <Link href="/income/create">
-                <PlusCircle /> Add Income
-              </Link>
-            </Button>
-            <DataTable columns={columns} data={data}/>
+          <div className="container flex flex-1 flex-col gap-4 md:min-h-min p-4">
+            <DataTable 
+              columns={columns} 
+              data={data}
+              actionButton={
+                <Button variant="outline" size="sm" className="w-fit" asChild>
+                  <Link href="/income/create">
+                    <PlusCircle /> Add Income
+                  </Link>
+                </Button>
+              }
+            />
+          </div>
         </div>
     </SidebarInset>
   )

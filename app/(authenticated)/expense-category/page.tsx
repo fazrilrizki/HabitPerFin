@@ -45,9 +45,8 @@ export default async function ExpenseCategoryPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="container flex flex-1 flex-col gap-4 rounded-xl bg-muted/50 md:min-h-min p-4">
-                <AddCategoryDialog />
-                <DataTable columns={columns} data={data}/>
+            <div className="container flex flex-1 flex-col gap-4 md:min-h-min p-4">
+                <DataTable columns={columns} data={data} actionButton={<AddCategoryDialog />} />
             </div>
         </div>
     </SidebarInset>

@@ -90,16 +90,18 @@ export async function deleteExpense(id: string) {
         }
     })
     
-    await prisma.walletManagements.update({
-        where: { 
-            id: expense?.wallet_management_id
-        },
-        data : {
-            remaining_balance: {
-                increment: Number(expense?.amount)
+    if (expense?.wallet_management_id) {
+        await prisma.walletManagements.update({
+            where: { 
+                id: expense.wallet_management_id
+            },
+            data : {
+                remaining_balance: {
+                    increment: Number(expense.amount)
+                }
             }
-        }
-    })
+        })
+    }
 
     revalidatePath("/expense")
 }
