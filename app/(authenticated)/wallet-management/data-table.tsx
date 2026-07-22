@@ -28,6 +28,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({
   columns,
+  data,
   actionButton,
 }: DataTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = React.useState("")

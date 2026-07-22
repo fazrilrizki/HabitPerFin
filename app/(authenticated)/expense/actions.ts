@@ -27,7 +27,7 @@ export async function getData(): Promise<Expense[]> {
 }
 
 const createExpenseSchema = z.object({
-    amount: z.string().min(1, "Amount is required"),
+    amount: z.string().min(1, "Amount is required").transform(val => val.replace(/[^0-9-]+/g,"")),
     transaction_date: z.string().min(1, "Transaction date is required").transform((str) => new Date(str)),
     description: z.string(),
     category_id: z.string().min(1, "Category is required"),
