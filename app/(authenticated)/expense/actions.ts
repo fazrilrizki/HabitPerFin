@@ -102,7 +102,7 @@ export async function createExpense(formData: FormData) {
 
         if (budgetLimit > 0 && totalSpent >= budgetLimit * 0.8) {
             const percentage = Math.round((totalSpent / budgetLimit) * 100);
-            return { warning: `Pengeluaran kategori ${category.name} telah mencapai ${percentage}% dari budget limit bulan ini!` };
+            return { warning: `Expense for category ${category.name} has reached ${percentage}% of this month's budget limit!` };
         }
     }
 }

@@ -8,15 +8,16 @@ datasource db {
 }
 
 model WalletManagements {
-  id                Int       @id @default(autoincrement())
-  name              String
-  initial_balance   Decimal   @db.Decimal(15, 2)
-  status            String
-  createdAt         DateTime  @default(now()) @map("created_at")
-  userId            String    @default("system")
-  remaining_balance Decimal   @default(0.00) @db.Decimal(15, 2)
-  incomes           Income[]
-  expense           Expense[]
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  initial_balance      Decimal               @db.Decimal(15, 2)
+  status               String
+  createdAt            DateTime              @default(now()) @map("created_at")
+  userId               String                @default("system")
+  remaining_balance    Decimal               @default(0.00) @db.Decimal(15, 2)
+  incomes              Income[]
+  expense              Expense[]
+  financialGoalSavings FinancialGoalSaving[]
 
   @@map("wallet_managements")
 }
@@ -70,4 +71,34 @@ model user {
   email    String  @unique(map: "User_email_key")
   password String
   name     String?
+}
+
+model FinancialGoal {
+  id           Int                   @id @default(autoincrement())
+  name         String
+  targetAmount Decimal               @db.Decimal(15, 2)
+  targetDate   DateTime?             @db.Date
+  status       String                @default("active")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  userId       String                @default("system")
+  savings      FinancialGoalSaving[]
+
+  @@map("financial_goals")
+}
+
+model FinancialGoalSaving {
+  id                   Int               @id @default(autoincrement())
+  amount               Decimal           @db.Decimal(15, 2)
+  transactionDate      DateTime          @map("transaction_date") @db.Date
+  createdAt            DateTime          @default(now()) @map("created_at")
+  userId               String            @default("system")
+  description          String?           @db.Text
+  financial_goal_id    Int
+  wallet_management_id Int
+  financialGoal        FinancialGoal     @relation(fields: [financial_goal_id], references: [id], onDelete: Cascade)
+  walletManagements    WalletManagements @relation(fields: [wallet_management_id], references: [id])
+
+  @@index([financial_goal_id], map: "financial_goal_saving_goal_id_fkey")
+  @@index([wallet_management_id], map: "financial_goal_saving_wallet_management_id_fkey")
+  @@map("financial_goal_savings")
 }

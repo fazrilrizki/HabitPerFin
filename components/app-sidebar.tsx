@@ -10,6 +10,8 @@ import {
   Command,
   GalleryVerticalEnd,
   LayoutDashboardIcon,
+  PiggyBank,
+  Target,
   TrendingDown,
   WalletMinimal,
 } from "lucide-react"
@@ -83,6 +85,11 @@ const data = {
       title: "Income",
       url: "/income",
       icon: BanknoteArrowUp
+    },
+    {
+      title: "Financial Goals",
+      url: "/financial-goals",
+      icon: PiggyBank
     }
   ]
 }
