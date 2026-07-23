@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { CurrencyInputCustom } from "@/components/ui/currency-input"
 import { Label } from "@/components/ui/label"
 import { updateCategory } from "./actions"
 import { toast } from "sonner"
@@ -78,13 +79,14 @@ export function EditCategoryDialog({ category, children }: EditCategoryDialogPro
             </Field>
             <Field>
               <Label htmlFor="budgetLimit">Budget Limit (Rp)</Label>
-              <Input
+              <CurrencyInputCustom
                 id="budgetLimit"
                 name="budgetLimit"
-                type="number"
                 defaultValue={category.budgetLimit}
+                placeholder="Rp 0"
+                prefix="Rp "
+                decimalsLimit={0}
                 required
-                min="0"
               />
             </Field>
           </FieldGroup>

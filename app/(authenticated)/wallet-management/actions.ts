@@ -25,7 +25,7 @@ export async function getData(): Promise<WalletManagement[]> {
 
 const createWalletSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  initial_balance: z.string().min(1, "Initial balance is required")
+  initial_balance: z.string().min(1, "Initial balance is required").transform(val => val.replace(/[^0-9-]+/g,""))
 })
 
 export async function createWallet(formData: FormData) {
@@ -68,7 +68,7 @@ export async function toggleWalletStatus(id: string, status: "Active" | "Inactiv
 const updateWalletSchema = z.object({
   id: z.string().min(1, "Invalid wallet ID"),
   name: z.string().min(1, "Name is required"),
-  initial_balance: z.string().min(1, "Initial balance is required")
+  initial_balance: z.string().min(1, "Initial balance is required").transform(val => val.replace(/[^0-9-]+/g,""))
 })
 
 export async function updateWallet(formData: FormData) {

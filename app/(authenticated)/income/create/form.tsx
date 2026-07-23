@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { CurrencyInputCustom } from "@/components/ui/currency-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useRef, useState, useTransition } from "react";
@@ -71,13 +72,13 @@ export default function FormCreate({ walletManagementOptions }: {
             <div className="grid grid-cols-2 gap-4">
               <Field>
                 <Label htmlFor="amount">Amount</Label>
-                <Input
+                <CurrencyInputCustom
                   id="amount"
                   name="amount"
-                  type="number"
                   placeholder="Rp. 0"
+                  prefix="Rp "
+                  decimalsLimit={0}
                   required
-                  min="0"
                 />
               </Field>
               <Field>

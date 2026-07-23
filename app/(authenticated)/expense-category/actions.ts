@@ -27,7 +27,7 @@ export async function getData(): Promise<ExpenseCategory[]> {
 const createCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   categoryType: z.enum(["Primer", "Non-Primer"]),
-  budgetLimit: z.string().min(1, "Budget limit is required"),
+  budgetLimit: z.string().min(1, "Budget limit is required").transform(val => val.replace(/[^0-9-]+/g,"")),
 })
 
 export async function createCategory(formData: FormData) {
@@ -72,7 +72,7 @@ const updateCategorySchema = z.object({
   id: z.string().min(1, "Invalid category ID"),
   name: z.string().min(1, "Name is required"),
   categoryType: z.enum(["Primer", "Non-Primer"]),
-  budgetLimit: z.string().min(1, "Budget limit is required")
+  budgetLimit: z.string().min(1, "Budget limit is required").transform(val => val.replace(/[^0-9-]+/g,""))
 })
 
 export async function updateCategory(formData: FormData) {

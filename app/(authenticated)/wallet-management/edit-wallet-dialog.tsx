@@ -16,6 +16,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { CurrencyInputCustom } from "@/components/ui/currency-input"
 import { updateWallet } from "./actions"
 import { WalletManagement } from "./columns"
 
@@ -60,11 +61,13 @@ export function EditWalletDialog({ wallet, children }: EditWalletDialogProps) {
             </Field>
             <Field>
               <Label htmlFor="initial_balance">Initial Balance</Label>
-              <Input
+              <CurrencyInputCustom
                 id="initial_balance"
                 name="initial_balance"
                 defaultValue={wallet.initial_balance}
-                placeholder="1000000"
+                placeholder="Rp 0"
+                prefix="Rp "
+                decimalsLimit={0}
                 required
               />
             </Field>

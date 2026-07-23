@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { CurrencyInputCustom } from "@/components/ui/currency-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useRef, useState, useTransition } from "react";
@@ -22,7 +23,9 @@ import SelectCustom, { SelectOption } from "@/components/ui/select-custom";
 import Link from "next/link";
 import { WalletOption } from "../../wallet-management/actions";
 import { ExpenseCategoryOption } from "../../expense-category/actions";
-import { Wallet, PieChart } from "lucide-react";
+import { Wallet } from "lucide-react";
+import { BudgetProgress } from "@/components/ui/budget-progress";
+
 
 export default function FormCreate({ walletManagementOptions, categoryOptions }: {
   walletManagementOptions: WalletOption[],
@@ -41,12 +44,15 @@ export default function FormCreate({ walletManagementOptions, categoryOptions }:
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     startTransition(async () => {
-      await createExpense(formData);
+      const res = await createExpense(formData);
       formRef.current?.reset();
       setResetKey(prev => prev + 1)
       setSelectedWalletId(undefined)
       setSelectedCategoryId(undefined)
       toast.success("Expense created succcessfully");
+      if (res?.warning) {
+        toast.warning(res.warning);
+      }
     });
   }
 
@@ -79,23 +85,7 @@ export default function FormCreate({ walletManagementOptions, categoryOptions }:
                 <Label htmlFor="category">Expense Category</Label>
                 <SelectCustom key={resetKey} name="category_id" options={categoryOptions} placeholder="Select a Expense Category" onValueChange={setSelectedCategoryId}/>
                 {selectedCategory && (
-                  <div className="mt-2 flex flex-col gap-2 rounded-lg bg-orange-500/10 px-3 py-2.5 text-sm shadow-sm border border-orange-500/20">
-                    <div className="flex items-center justify-between text-orange-600 dark:text-orange-400">
-                      <div className="flex items-center gap-2">
-                        <PieChart className="h-4 w-4" />
-                        <span className="font-medium">Monthly Budget</span>
-                      </div>
-                      <span className="font-bold tracking-tight">
-                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(selectedCategory.spent)} / {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(selectedCategory.budgetLimit)}
-                      </span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-orange-500/20">
-                      <div 
-                        className={`h-full ${selectedCategory.spent > selectedCategory.budgetLimit ? 'bg-red-500' : 'bg-orange-500'} transition-all duration-300`} 
-                        style={{ width: `${Math.min((selectedCategory.spent / (selectedCategory.budgetLimit || 1)) * 100, 100)}%` }}
-                      />
-                    </div>
-                  </div>
+                  <BudgetProgress category={selectedCategory} />
                 )}
               </Field>
 
@@ -103,13 +93,13 @@ export default function FormCreate({ walletManagementOptions, categoryOptions }:
             <div className="grid grid-cols-2 gap-4">
               <Field>
                 <Label htmlFor="amount">Amount</Label>
-                <Input
+                <CurrencyInputCustom
                   id="amount"
                   name="amount"
-                  type="number"
                   placeholder="Rp. 0"
+                  prefix="Rp "
+                  decimalsLimit={0}
                   required
-                  min="0"
                 />
               </Field>
               <Field>

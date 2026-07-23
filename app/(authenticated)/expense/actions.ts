@@ -27,7 +27,7 @@ export async function getData(): Promise<Expense[]> {
 }
 
 const createExpenseSchema = z.object({
-    amount: z.string().min(1, "Amount is required"),
+    amount: z.string().min(1, "Amount is required").transform(val => val.replace(/[^0-9-]+/g,"")),
     transaction_date: z.string().min(1, "Transaction date is required").transform((str) => new Date(str)),
     description: z.string(),
     category_id: z.string().min(1, "Category is required"),
@@ -73,6 +73,38 @@ export async function createExpense(formData: FormData) {
     })
 
     revalidatePath("/expense")
+
+    const category = await prisma.expenseCategory.findUnique({
+        where: { id: parseInt(parsed.data.category_id) }
+    })
+    
+    if (category) {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+        const expenses = await prisma.expense.aggregate({
+            where: {
+                userId: session.user.sub,
+                expense_category_id: category.id,
+                transactionDate: {
+                    gte: startOfMonth,
+                    lt: endOfMonth,
+                }
+            },
+            _sum: {
+                amount: true
+            }
+        });
+
+        const totalSpent = Number(expenses._sum.amount || 0);
+        const budgetLimit = Number(category.budgetLimit);
+
+        if (budgetLimit > 0 && totalSpent >= budgetLimit * 0.8) {
+            const percentage = Math.round((totalSpent / budgetLimit) * 100);
+            return { warning: `Expense for category ${category.name} has reached ${percentage}% of this month's budget limit!` };
+        }
+    }
 }
 
 export async function deleteExpense(id: string) {
