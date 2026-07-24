@@ -48,7 +48,7 @@ export default async function FinancialGoalsPage() {
         <div className="flex flex-1 flex-col gap-6 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Financial Goals</h1>
+              <h1 className="text-xl font-bold tracking-tight">Financial Goals</h1>
               <p className="text-muted-foreground">Track and achieve your savings targets.</p>
             </div>
             <AddGoalDialog />
