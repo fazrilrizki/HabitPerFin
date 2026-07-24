@@ -11,6 +11,9 @@ const adapter = new PrismaMariaDb({
     user: url.username,
     password: url.password,
     database: url.pathname.slice(1),
+    ssl: {
+        rejectUnauthorized: true, // TiDB Cloud requires SSL
+    }
 });
 
 const prisma =
