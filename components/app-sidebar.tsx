@@ -90,6 +90,11 @@ const data = {
       title: "Financial Goals",
       url: "/financial-goals",
       icon: PiggyBank
+    },
+    {
+      title: "Habit Tracker",
+      url: "/habits",
+      icon: Target
     }
   ]
 }

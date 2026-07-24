@@ -15,9 +15,9 @@ model WalletManagements {
   createdAt            DateTime              @default(now()) @map("created_at")
   userId               String                @default("system")
   remaining_balance    Decimal               @default(0.00) @db.Decimal(15, 2)
-  incomes              Income[]
   expense              Expense[]
   financialGoalSavings FinancialGoalSaving[]
+  incomes              Income[]
 
   @@map("wallet_managements")
 }
@@ -101,4 +101,32 @@ model FinancialGoalSaving {
   @@index([financial_goal_id], map: "financial_goal_saving_goal_id_fkey")
   @@index([wallet_management_id], map: "financial_goal_saving_wallet_management_id_fkey")
   @@map("financial_goal_savings")
+}
+
+model Habit {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?    @db.Text
+  frequency   String     @default("daily")
+  status      String     @default("active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  userId      String     @default("system")
+  logs        HabitLog[]
+
+  @@map("habits")
+}
+
+model HabitLog {
+  id          Int      @id @default(autoincrement())
+  habit_id    Int
+  date        DateTime @db.Date
+  isCompleted Boolean  @default(true)
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  userId      String   @default("system")
+  habit       Habit    @relation(fields: [habit_id], references: [id], onDelete: Cascade)
+
+  @@unique([habit_id, date])
+  @@index([habit_id], map: "habit_log_habit_id_fkey")
+  @@map("habit_logs")
 }
