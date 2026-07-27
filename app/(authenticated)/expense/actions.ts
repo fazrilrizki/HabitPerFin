@@ -137,3 +137,36 @@ export async function deleteExpense(id: string) {
 
     revalidatePath("/expense")
 }
+
+export async function getCalendarData(month: number, year: number) {
+    const session = await auth0.getSession();
+    if (!session?.user) return {};
+
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const expenses = await prisma.expense.findMany({
+        where: {
+            userId: session.user.sub,
+            transactionDate: {
+                gte: startDate,
+                lt: endDate
+            }
+        },
+        select: {
+            transactionDate: true,
+            amount: true
+        }
+    });
+
+    const grouped = expenses.reduce((acc, curr) => {
+        const dateStr = curr.transactionDate.toISOString().split('T')[0];
+        if (!acc[dateStr]) {
+            acc[dateStr] = 0;
+        }
+        acc[dateStr] += Number(curr.amount);
+        return acc;
+    }, {} as Record<string, number>);
+
+    return grouped;
+}
