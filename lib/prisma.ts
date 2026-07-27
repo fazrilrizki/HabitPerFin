@@ -12,7 +12,7 @@ const adapter = new PrismaMariaDb({
     password: url.password,
     database: url.pathname.slice(1),
     ssl: {
-        rejectUnauthorized: true, // TiDB Cloud requires SSL
+        rejectUnauthorized: process.env.APP_ENV == 'production' ? true : false, // TiDB Cloud requires SSL
     }
 });
 

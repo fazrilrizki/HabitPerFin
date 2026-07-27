@@ -41,9 +41,9 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "HabitPerFin",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Personal Finance",
     },
     {
       name: "Acme Corp.",
