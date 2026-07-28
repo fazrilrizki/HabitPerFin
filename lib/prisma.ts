@@ -11,6 +11,8 @@ const adapter = new PrismaMariaDb({
     user: url.username,
     password: url.password,
     database: url.pathname.slice(1),
+    connectTimeout: 30000,
+    connectionLimit: 1,
     ssl: {
         rejectUnauthorized: process.env.APP_ENV == 'production' ? true : false, // TiDB Cloud requires SSL
     }
