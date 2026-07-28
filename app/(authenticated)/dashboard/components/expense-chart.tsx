@@ -50,7 +50,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                                <Tooltip formatter={(value: any) => formatCurrency(value as number)} />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
