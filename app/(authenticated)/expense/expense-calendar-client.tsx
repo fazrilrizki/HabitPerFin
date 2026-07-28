@@ -47,12 +47,11 @@ export function ExpenseCalendarClient({ data }: { data: Record<string, number> }
                 classNames={{
                     months: "w-full",
                     month: "w-full space-y-4",
-                    table: "w-full border-collapse",
-                    head_row: "grid grid-cols-7 w-full",
-                    head_cell: "text-muted-foreground font-medium text-sm text-center py-2 w-full",
-                    row: "grid grid-cols-7 w-full mt-2 gap-1 md:gap-2",
-                    cell: "relative w-full h-auto p-0 text-center focus-within:relative focus-within:z-20",
-                    day: "h-full w-full", // Overrides the fixed size
+                    month_grid: "w-full border-collapse",
+                    weekdays: "grid grid-cols-7 w-full",
+                    weekday: "text-muted-foreground font-medium text-sm text-center py-2 w-full",
+                    week: "grid grid-cols-7 w-full mt-2 gap-1 md:gap-2",
+                    day: "relative w-full h-full p-0 text-center focus-within:relative focus-within:z-20",
                 }}
                 components={{
                     DayButton: CustomDayButton
