@@ -80,18 +80,6 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a href="/auth/logout">
                 <LogOut />

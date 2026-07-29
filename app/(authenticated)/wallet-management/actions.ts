@@ -15,10 +15,12 @@ export async function getData(): Promise<WalletManagement[]> {
     where: { userId: session.user.sub },
     orderBy: { createdAt: "desc" }
   })
+
   return wallets.map(w => ({
     id: String(w.id),
     name: w.name,
     initial_balance: Number(w.initial_balance),
+    remaining_balance: Number(w.remaining_balance),
     status: w.status as "Active" | "Inactive",
   }))
 }

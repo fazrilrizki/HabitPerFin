@@ -11,6 +11,7 @@ import {
   GalleryVerticalEnd,
   LayoutDashboardIcon,
   PiggyBank,
+  Repeat,
   Target,
   TrendingDown,
   WalletMinimal,
@@ -44,17 +45,7 @@ const data = {
       name: "HabitPerFin",
       logo: GalleryVerticalEnd,
       plan: "Personal Finance",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
+    }
   ],
   navMain: [
     {
@@ -85,6 +76,11 @@ const data = {
       title: "Income",
       url: "/income",
       icon: BanknoteArrowUp
+    },
+    {
+      title: "Transfer Balance",
+      url: "/transfer-balance",
+      icon: Repeat
     },
     {
       title: "Financial Goals",
