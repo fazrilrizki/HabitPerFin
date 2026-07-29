@@ -1,20 +1,18 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "next/navigation";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { getData } from "./actions";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import Link from "next/link";
+import { TransferForm } from "./transfer-form";
+import { getWalletManagementOptions } from "../../wallet-management/actions";
 
-export default async function TransferBalancePage() {
+export default async function CreateTransferPage() {
     const session = await auth0.getSession();
     if (!session) redirect("/auth/login");
-    
+
+    const walletOptions = await getWalletManagementOptions();
+
     return (
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -31,26 +29,17 @@ export default async function TransferBalancePage() {
                                     Transfer Balance
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Create Transfer</BreadcrumbPage>
+                            </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <div className="container flex flex-1 flex-col gap-4 md:min-h-min p-4">
-                    <div className="flex items-center justify-between w-full mb-2">
-                        <h1 className="text-xl font-bold">Transfer Balance</h1>
-                    </div>
-                    <DataTable 
-                        columns={columns} 
-                        data={await getData()}
-                        actionButton={
-                            <Button variant="default" size="sm" className="h-8" asChild>
-                                <Link href="/transfer-balance/create">
-                                    <PlusCircle className="w-4 h-4 mr-2"/> Add Transfer
-                                </Link>
-                            </Button>
-                        }
-                    />
+                    <TransferForm walletOptions={walletOptions} />
                 </div>
             </div>
         </SidebarInset>

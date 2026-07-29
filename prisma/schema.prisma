@@ -18,6 +18,8 @@ model WalletManagements {
   expense              Expense[]
   financialGoalSavings FinancialGoalSaving[]
   incomes              Income[]
+  transfersFrom        Transfer[] @relation("TransferFrom")
+  transfersTo          Transfer[] @relation("TransferTo")
 
   @@map("wallet_managements")
 }
@@ -130,3 +132,21 @@ model HabitLog {
   @@index([habit_id], map: "habit_log_habit_id_fkey")
   @@map("habit_logs")
 }
+
+model Transfer {
+  id                   Int               @id @default(autoincrement())
+  amount               Decimal           @db.Decimal(15, 2)
+  description          String            @db.Text
+  transactionDate      DateTime          @map("transaction_date") @db.Date
+  createdAt            DateTime          @default(now()) @map("created_at")
+  userId               String            @default("system")
+  from_wallet_id       Int
+  to_wallet_id         Int
+  fromWallet           WalletManagements @relation("TransferFrom", fields: [from_wallet_id], references: [id])
+  toWallet             WalletManagements @relation("TransferTo", fields: [to_wallet_id], references: [id])
+
+  @@index([from_wallet_id], map: "transfer_from_wallet_id_fkey")
+  @@index([to_wallet_id], map: "transfer_to_wallet_id_fkey")
+  @@map("transfers")
+}
+
