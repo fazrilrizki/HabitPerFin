@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-export interface TableLayoutProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TableLayoutProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: React.ReactNode

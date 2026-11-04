@@ -1,10 +1,18 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { auth0 } from "@/lib/auth0";
 import { revalidatePath } from "next/cache";
 
+async function requireUserId() {
+    const session = await auth0.getSession();
+    if (!session?.user) throw new Error("Unauthorized");
+    return session.user.sub as string;
+}
+
 export async function getFinancialOverview() {
-    const wallets = await prisma.walletManagements.findMany();
+    const userId = await requireUserId();
+    const wallets = await prisma.walletManagements.findMany({ where: { userId } });
     const totalBalance = wallets.reduce((acc, wallet) => acc + Number(wallet.remaining_balance), 0);
     
     const date = new Date();
@@ -13,12 +21,12 @@ export async function getFinancialOverview() {
 
     const incomes = await prisma.income.aggregate({
         _sum: { amount: true },
-        where: { transactionDate: { gte: firstDay, lte: lastDay } }
+        where: { userId, transactionDate: { gte: firstDay, lte: lastDay } }
     });
 
     const expenses = await prisma.expense.aggregate({
         _sum: { amount: true },
-        where: { transactionDate: { gte: firstDay, lte: lastDay } }
+        where: { userId, transactionDate: { gte: firstDay, lte: lastDay } }
     });
 
     return {
@@ -29,12 +37,13 @@ export async function getFinancialOverview() {
 }
 
 export async function getTodayHabits() {
+    const userId = await requireUserId();
     const today = new Date();
     // we use UTC dates to prevent timezone issues since the db uses db.Date
     const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
     const habits = await prisma.habit.findMany({
-        where: { status: 'active' },
+        where: { userId, status: 'active' },
         include: {
             logs: {
                 where: { date: startOfDay }
@@ -50,6 +59,9 @@ export async function getTodayHabits() {
 }
 
 export async function toggleHabitStatus(habitId: number, isCompleted: boolean) {
+    const userId = await requireUserId();
+    const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
+    if (!habit) throw new Error("Habit not found");
     const today = new Date();
     const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
     
@@ -68,6 +80,7 @@ export async function toggleHabitStatus(habitId: number, isCompleted: boolean) {
         await prisma.habitLog.create({
             data: {
                 habit_id: habitId,
+                userId,
                 date: startOfDay,
                 isCompleted
             }
@@ -78,12 +91,13 @@ export async function toggleHabitStatus(habitId: number, isCompleted: boolean) {
 }
 
 export async function getExpenseByCategoryThisMonth() {
+    const userId = await requireUserId();
     const date = new Date();
     const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
     const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
 
     const expenses = await prisma.expense.findMany({
-        where: { transactionDate: { gte: firstDay, lte: lastDay } },
+        where: { userId, transactionDate: { gte: firstDay, lte: lastDay } },
         include: { expenseCategory: true }
     });
 
@@ -97,12 +111,15 @@ export async function getExpenseByCategoryThisMonth() {
 }
 
 export async function getRecentTransactions() {
+    const userId = await requireUserId();
     const incomes = await prisma.income.findMany({
+        where: { userId },
         orderBy: { transactionDate: 'desc' },
         take: 5
     });
 
     const expenses = await prisma.expense.findMany({
+        where: { userId },
         orderBy: { transactionDate: 'desc' },
         take: 5
     });
@@ -123,8 +140,9 @@ export async function getRecentTransactions() {
 }
 
 export async function getFinancialGoalsProgress() {
+    const userId = await requireUserId();
     const goals = await prisma.financialGoal.findMany({
-        where: { status: 'active' },
+        where: { userId, status: 'active' },
         include: { savings: true }
     });
 
